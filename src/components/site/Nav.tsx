@@ -1,6 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { AccountMenu } from "./AccountMenu";
 
 const links = [
   { to: "/portfolio", label: "Portfolio", color: "hover:text-cyan" },
@@ -35,12 +36,15 @@ export function Nav() {
           ))}
           <span className="text-magenta flicker">● Online</span>
         </div>
-        <Link
-          to="/book"
-          className="hidden md:inline-flex px-4 py-2 border border-magenta text-magenta font-mono text-xs uppercase tracking-wider hover:bg-magenta hover:text-white transition-all"
-        >
-          Book_Session
-        </Link>
+        <div className="hidden md:flex items-center gap-4">
+          <AccountMenu />
+          <Link
+            to="/book"
+            className="inline-flex px-4 py-2 border border-magenta text-magenta font-mono text-xs uppercase tracking-wider hover:bg-magenta hover:text-white transition-all"
+          >
+            Book_Session
+          </Link>
+        </div>
         <button
           className="md:hidden text-foreground"
           onClick={() => setOpen((o) => !o)}
@@ -56,6 +60,7 @@ export function Nav() {
               {l.label}
             </Link>
           ))}
+          <div className="pt-3 border-t border-border"><AccountMenu /></div>
         </div>
       )}
     </nav>
