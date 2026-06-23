@@ -13,7 +13,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Custom neon color realism and pop culture surrealism tattoos. Portfolio, available flash designs, prints and stickers. Book a session at shyftdink.com." },
       { property: "og:title", content: "Shyftd Ink — Neon Color Realism Tattoo Artist" },
       { property: "og:description", content: "Custom neon color realism and pop culture surrealism tattoos." },
-      { property: "og:image", content: "/og.jpg" },
+      { property: "og:image", content: "https://shyftdink.com/og.jpg" },
+      { property: "og:url", content: "https://shyftdink.com/" },
       { rel: "canonical", href: "/" } as never,
     ],
     scripts: [
@@ -71,6 +72,7 @@ function Home() {
           </p>
           <h1 className="font-display text-[18vw] md:text-[12vw] leading-[0.85] uppercase tracking-tighter animate-fade-up">
             SHYFTD<span className="text-magenta flicker px-2 md:px-4">INK</span>
+            <span className="sr-only"> — Neon Color Realism Tattoo Studio</span>
           </h1>
           <p className="mt-6 max-w-xl mx-auto text-muted-foreground text-sm md:text-base animate-fade-up" style={{ animationDelay: "120ms" }}>
             Custom neon tattoos. Pop culture portraits, color realism, graffiti surrealism — booked from shyftdink.com.
