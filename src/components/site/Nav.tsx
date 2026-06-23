@@ -60,6 +60,7 @@ export function Nav() {
               {l.label}
             </Link>
           ))}
+          <div className="pt-3 border-t border-border"><AccountMenu /></div>
         </div>
       )}
     </nav>
