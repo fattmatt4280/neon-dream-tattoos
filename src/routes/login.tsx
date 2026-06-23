@@ -45,6 +45,18 @@ function LoginPage() {
     }
   }
 
+  async function signInWithGoogle() {
+    setBusy(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+    setBusy(false);
+    if (result.error) return toast.error(result.error.message);
+    if (result.redirected) return;
+    toast.success("Welcome back");
+    nav({ to: "/admin" });
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background">
       <Link to="/" className="font-display text-3xl uppercase mb-10">
