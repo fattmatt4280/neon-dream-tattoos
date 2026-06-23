@@ -125,22 +125,6 @@ function ContentManager({ table, fields }: { table: "portfolio_items" | "flash_d
     },
   });
 
-  async function onCreate(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    const row: Record<string, unknown> = {};
-    for (const f of fields) {
-      const v = fd.get(f.name);
-      if (f.type === "checkbox") row[f.name] = v === "on";
-      else if (f.type === "number") row[f.name] = v ? Number(v) : 0;
-      else row[f.name] = v || null;
-    }
-    const { error } = await supabase.from(table).insert(row as never);
-    if (error) return toast.error(error.message);
-    toast.success("Created");
-    setCreating(false);
-    qc.invalidateQueries({ queryKey: ["admin", table] });
-  }
 
   async function onDelete(id: string) {
     if (!confirm("Delete this item?")) return;
