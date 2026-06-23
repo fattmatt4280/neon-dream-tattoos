@@ -12,7 +12,20 @@ export const Route = createFileRoute("/portfolio")({
       { name: "description", content: "Browse the full portfolio of neon color realism and graffiti surrealism tattoos by Shyftd Ink." },
       { property: "og:title", content: "Portfolio — Shyftd Ink" },
       { property: "og:description", content: "Browse the full portfolio of neon color realism and graffiti surrealism tattoos." },
+      { property: "og:url", content: "/portfolio" },
       { rel: "canonical", href: "/portfolio" } as never,
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Portfolio — Shyftd Ink",
+          description: "Full archive of neon color realism and graffiti surrealism tattoos by Shyftd Ink.",
+          url: "/portfolio",
+        }),
+      },
     ],
   }),
   component: PortfolioPage,

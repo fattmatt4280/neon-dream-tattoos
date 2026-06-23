@@ -1,0 +1,14 @@
+# Shyftd Ink
+
+> Neon color realism and pop culture graffiti surrealism tattoo studio. Custom commissions, available flash designs, prints, and stickers — booked from shyftdink.com.
+
+Shyftd Ink is a custom tattoo studio specializing in bold, bright, color-realism work with pop culture and graffiti-surrealism influences. Booking is by appointment only.
+
+## Pages
+
+- [Home](/): Studio overview, featured portfolio, and available flash highlights.
+- [Portfolio](/portfolio): Full archive of completed tattoo work.
+- [Flash](/flash): Available, one-of-a-kind flash designs ready to be tattooed.
+- [Shop](/merch): Limited prints, holographic stickers, and original artwork.
+- [Book](/book): Booking request form for custom tattoos and flash claims.
+- [Contact](/contact): Email, social links, studio hours, and response time.

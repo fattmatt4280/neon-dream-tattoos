@@ -72,7 +72,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Shyftd Ink — Neon Color Realism Tattoos" },
       { property: "og:description", content: "Color realism, pop culture and graffiti surrealism tattoos. Book now." },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [

@@ -13,7 +13,20 @@ export const Route = createFileRoute("/merch")({
       { name: "description", content: "Limited prints, holographic stickers, and original artwork from Shyftd Ink." },
       { property: "og:title", content: "Shop — Shyftd Ink" },
       { property: "og:description", content: "Limited prints, holographic stickers, and original artwork." },
+      { property: "og:url", content: "/merch" },
       { rel: "canonical", href: "/merch" } as never,
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Shop — Shyftd Ink",
+          description: "Limited prints, holographic stickers, and original artwork from Shyftd Ink.",
+          url: "/merch",
+        }),
+      },
     ],
   }),
   component: MerchPage,
@@ -56,7 +69,7 @@ function MerchPage() {
                   <div className="flex items-start justify-between gap-2">
                     <div>
                       <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">{item.product_type}</p>
-                      <h3 className="font-display text-xl uppercase mt-1">{item.title}</h3>
+                      <h2 className="font-display text-xl uppercase mt-1">{item.title}</h2>
                     </div>
                     <span className="font-mono text-acid">{fmtPrice(item.price_cents)}</span>
                   </div>
