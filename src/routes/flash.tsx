@@ -12,7 +12,20 @@ export const Route = createFileRoute("/flash")({
       { name: "description", content: "Available tattoo flash designs ready to be claimed. Custom neon, pop culture, and graffiti pieces." },
       { property: "og:title", content: "Available Flash — Shyftd Ink" },
       { property: "og:description", content: "Available tattoo flash designs ready to be claimed." },
+      { property: "og:url", content: "/flash" },
       { rel: "canonical", href: "/flash" } as never,
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Available Flash — Shyftd Ink",
+          description: "Available tattoo flash designs ready to be claimed.",
+          url: "/flash",
+        }),
+      },
     ],
   }),
   component: FlashPage,

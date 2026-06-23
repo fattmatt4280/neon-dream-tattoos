@@ -9,7 +9,36 @@ export const Route = createFileRoute("/contact")({
       { name: "description", content: "Get in touch with Shyftd Ink for bookings, collaborations, or merch inquiries." },
       { property: "og:title", content: "Contact — Shyftd Ink" },
       { property: "og:description", content: "Get in touch with Shyftd Ink." },
+      { property: "og:url", content: "/contact" },
       { rel: "canonical", href: "/contact" } as never,
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          "@id": "https://shyftdink.com/#studio",
+          name: "Shyftd Ink",
+          description: "Neon color realism and pop culture graffiti surrealism tattoo studio. By appointment only.",
+          url: "https://shyftdink.com/contact",
+          email: "studio@shyftdink.com",
+          priceRange: "$$$",
+          openingHoursSpecification: [
+            {
+              "@type": "OpeningHoursSpecification",
+              dayOfWeek: ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+              opens: "12:00",
+              closes: "23:00",
+            },
+          ],
+          sameAs: [
+            "https://instagram.com",
+            "https://tiktok.com",
+            "https://twitter.com",
+          ],
+        }),
+      },
     ],
   }),
   component: Contact,
