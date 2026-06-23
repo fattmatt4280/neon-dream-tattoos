@@ -11,6 +11,8 @@ import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Toaster } from "sonner";
+import { SignInModal } from "@/components/site/SignInModal";
+import { useAutoLogout } from "@/hooks/useAutoLogout";
 
 import appCss from "../styles.css?url";
 
@@ -109,10 +111,17 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthInvalidator />
+      <AutoLogoutWatcher />
+      <SignInModal />
       <Outlet />
       <Toaster theme="dark" position="bottom-center" />
     </QueryClientProvider>
   );
+}
+
+function AutoLogoutWatcher() {
+  useAutoLogout();
+  return null;
 }
 
 function AuthInvalidator() {
