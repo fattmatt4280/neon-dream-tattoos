@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/use-auth";
 import { toast } from "sonner";
-import { LogOut, Plus, Trash2 } from "lucide-react";
+import { LogOut, Plus, Trash2, Upload } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Shyftd Ink" }, { name: "robots", content: "noindex" }] }),
