@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/use-auth";
 import { toast } from "sonner";
-import { LogOut, Plus, Trash2 } from "lucide-react";
+import { LogOut, Plus, Trash2, Upload } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Shyftd Ink" }, { name: "robots", content: "noindex" }] }),
@@ -125,22 +125,6 @@ function ContentManager({ table, fields }: { table: "portfolio_items" | "flash_d
     },
   });
 
-  async function onCreate(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const fd = new FormData(e.currentTarget);
-    const row: Record<string, unknown> = {};
-    for (const f of fields) {
-      const v = fd.get(f.name);
-      if (f.type === "checkbox") row[f.name] = v === "on";
-      else if (f.type === "number") row[f.name] = v ? Number(v) : 0;
-      else row[f.name] = v || null;
-    }
-    const { error } = await supabase.from(table).insert(row as never);
-    if (error) return toast.error(error.message);
-    toast.success("Created");
-    setCreating(false);
-    qc.invalidateQueries({ queryKey: ["admin", table] });
-  }
 
   async function onDelete(id: string) {
     if (!confirm("Delete this item?")) return;
@@ -163,25 +147,7 @@ function ContentManager({ table, fields }: { table: "portfolio_items" | "flash_d
       </div>
 
       {creating && (
-        <form onSubmit={onCreate} className="border border-magenta p-6 space-y-4 bg-card">
-          {fields.map((f) => (
-            <label key={f.name} className="block">
-              <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">{f.label}{f.required && <span className="text-magenta"> *</span>}</span>
-              {f.type === "textarea" ? (
-                <textarea name={f.name} required={f.required} rows={3} className="mt-1 w-full bg-background border border-border px-3 py-2 focus:outline-none focus:border-magenta" />
-              ) : f.type === "checkbox" ? (
-                <input type="checkbox" name={f.name} className="ml-2 mt-1" />
-              ) : f.type === "select" ? (
-                <select name={f.name} required={f.required} className="mt-1 w-full bg-background border border-border px-3 py-2 focus:outline-none focus:border-magenta">
-                  {f.options!.map((o) => <option key={o} value={o}>{o}</option>)}
-                </select>
-              ) : (
-                <input type={f.type ?? "text"} name={f.name} required={f.required} className="mt-1 w-full bg-background border border-border px-3 py-2 focus:outline-none focus:border-magenta" />
-              )}
-            </label>
-          ))}
-          <button type="submit" className="w-full bg-magenta text-white py-3 font-mono text-xs uppercase tracking-widest hover:bg-cyan hover:text-background">Save</button>
-        </form>
+        <CreateForm table={table} fields={fields} onDone={() => { setCreating(false); qc.invalidateQueries({ queryKey: ["admin", table] }); }} />
       )}
 
       {isLoading ? (
@@ -262,5 +228,143 @@ function BookingsManager() {
         ))
       )}
     </div>
+  );
+}
+
+function CreateForm({ table, fields, onDone }: { table: "portfolio_items" | "flash_designs" | "merch_products"; fields: Field[]; onDone: () => void }) {
+  const [values, setValues] = useState<Record<string, unknown>>({});
+  const [uploading, setUploading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  function setVal(name: string, v: unknown) {
+    setValues((s) => ({ ...s, [name]: v }));
+  }
+
+  async function handleUpload(fieldName: string, file: File) {
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `${table}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage.from("portfolio").upload(path, file, {
+        cacheControl: "31536000",
+        upsert: false,
+        contentType: file.type,
+      });
+      if (upErr) throw upErr;
+      // Long-lived signed URL (10 years) since bucket is private
+      const { data, error } = await supabase.storage.from("portfolio").createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
+      if (error || !data) throw error ?? new Error("Failed to sign URL");
+      setVal(fieldName, data.signedUrl);
+      toast.success("Image uploaded");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    const row: Record<string, unknown> = {};
+    for (const f of fields) {
+      const v = values[f.name];
+      if (f.type === "checkbox") row[f.name] = !!v;
+      else if (f.type === "number") row[f.name] = v ? Number(v) : 0;
+      else row[f.name] = v ?? null;
+    }
+    const { error } = await supabase.from(table).insert(row as never);
+    setSubmitting(false);
+    if (error) return toast.error(error.message);
+    toast.success("Created");
+    onDone();
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="border border-magenta p-6 space-y-4 bg-card">
+      {fields.map((f) => {
+        const isImage = f.name === "image_url";
+        const val = values[f.name];
+        return (
+          <label key={f.name} className="block">
+            <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
+              {f.label}{f.required && <span className="text-magenta"> *</span>}
+            </span>
+            {f.type === "textarea" ? (
+              <textarea
+                required={f.required}
+                rows={3}
+                value={(val as string) ?? ""}
+                onChange={(e) => setVal(f.name, e.target.value)}
+                className="mt-1 w-full bg-background border border-border px-3 py-2 focus:outline-none focus:border-magenta"
+              />
+            ) : f.type === "checkbox" ? (
+              <input
+                type="checkbox"
+                checked={!!val}
+                onChange={(e) => setVal(f.name, e.target.checked)}
+                className="ml-2 mt-1"
+              />
+            ) : f.type === "select" ? (
+              <select
+                required={f.required}
+                value={(val as string) ?? ""}
+                onChange={(e) => setVal(f.name, e.target.value)}
+                className="mt-1 w-full bg-background border border-border px-3 py-2 focus:outline-none focus:border-magenta"
+              >
+                <option value="">—</option>
+                {f.options!.map((o) => <option key={o} value={o}>{o}</option>)}
+              </select>
+            ) : isImage ? (
+              <div className="mt-1 space-y-2">
+                <input
+                  type="url"
+                  required={f.required}
+                  value={(val as string) ?? ""}
+                  onChange={(e) => setVal(f.name, e.target.value)}
+                  placeholder="Paste URL or upload below"
+                  className="w-full bg-background border border-border px-3 py-2 focus:outline-none focus:border-magenta"
+                />
+                <div className="flex items-center gap-3">
+                  <label className="inline-flex items-center gap-2 cursor-pointer border border-border px-3 py-2 font-mono text-[10px] uppercase tracking-widest hover:border-magenta hover:text-magenta">
+                    <Upload className="size-3" />
+                    {uploading ? "Uploading…" : "Upload image"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={uploading}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleUpload(f.name, file);
+                        e.target.value = "";
+                      }}
+                    />
+                  </label>
+                  {typeof val === "string" && val && (
+                    <img src={val} alt="" className="size-12 object-cover border border-border" />
+                  )}
+                </div>
+              </div>
+            ) : (
+              <input
+                type={f.type ?? "text"}
+                required={f.required}
+                value={(val as string | number | undefined) ?? ""}
+                onChange={(e) => setVal(f.name, e.target.value)}
+                className="mt-1 w-full bg-background border border-border px-3 py-2 focus:outline-none focus:border-magenta"
+              />
+            )}
+          </label>
+        );
+      })}
+      <button
+        type="submit"
+        disabled={submitting || uploading}
+        className="w-full bg-magenta text-white py-3 font-mono text-xs uppercase tracking-widest hover:bg-cyan hover:text-background disabled:opacity-50"
+      >
+        {submitting ? "Saving…" : "Save"}
+      </button>
+    </form>
   );
 }
