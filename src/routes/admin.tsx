@@ -163,25 +163,7 @@ function ContentManager({ table, fields }: { table: "portfolio_items" | "flash_d
       </div>
 
       {creating && (
-        <form onSubmit={onCreate} className="border border-magenta p-6 space-y-4 bg-card">
-          {fields.map((f) => (
-            <label key={f.name} className="block">
-              <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">{f.label}{f.required && <span className="text-magenta"> *</span>}</span>
-              {f.type === "textarea" ? (
-                <textarea name={f.name} required={f.required} rows={3} className="mt-1 w-full bg-background border border-border px-3 py-2 focus:outline-none focus:border-magenta" />
-              ) : f.type === "checkbox" ? (
-                <input type="checkbox" name={f.name} className="ml-2 mt-1" />
-              ) : f.type === "select" ? (
-                <select name={f.name} required={f.required} className="mt-1 w-full bg-background border border-border px-3 py-2 focus:outline-none focus:border-magenta">
-                  {f.options!.map((o) => <option key={o} value={o}>{o}</option>)}
-                </select>
-              ) : (
-                <input type={f.type ?? "text"} name={f.name} required={f.required} className="mt-1 w-full bg-background border border-border px-3 py-2 focus:outline-none focus:border-magenta" />
-              )}
-            </label>
-          ))}
-          <button type="submit" className="w-full bg-magenta text-white py-3 font-mono text-xs uppercase tracking-widest hover:bg-cyan hover:text-background">Save</button>
-        </form>
+        <CreateForm table={table} fields={fields} onDone={() => { setCreating(false); qc.invalidateQueries({ queryKey: ["admin", table] }); }} />
       )}
 
       {isLoading ? (
