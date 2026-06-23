@@ -88,6 +88,23 @@ function LoginPage() {
         >
           {busy ? "…" : mode === "signin" ? "Sign In" : "Sign Up"}
         </button>
+        <div className="relative flex items-center justify-center">
+          <span className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-border" />
+          </span>
+          <span className="relative bg-card px-2 text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
+            Or
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={signInWithGoogle}
+          disabled={busy}
+          className="w-full flex items-center justify-center gap-2 border border-border bg-background py-3 font-mono text-xs uppercase tracking-widest hover:border-magenta hover:text-magenta transition-colors disabled:opacity-50"
+        >
+          <Chrome className="w-4 h-4" />
+          Continue with Google
+        </button>
         <button
           type="button"
           onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
