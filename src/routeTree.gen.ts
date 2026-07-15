@@ -15,6 +15,7 @@ import { Route as MerchRouteImport } from './routes/merch'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FlashRouteImport } from './routes/flash'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as BookingSuccessRouteImport } from './routes/booking-success'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
@@ -49,6 +50,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookingSuccessRoute = BookingSuccessRouteImport.update({
+  id: '/booking-success',
+  path: '/booking-success',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BookRoute = BookRouteImport.update({
   id: '/book',
   path: '/book',
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/book': typeof BookRoute
+  '/booking-success': typeof BookingSuccessRoute
   '/contact': typeof ContactRoute
   '/flash': typeof FlashRoute
   '/login': typeof LoginRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/book': typeof BookRoute
+  '/booking-success': typeof BookingSuccessRoute
   '/contact': typeof ContactRoute
   '/flash': typeof FlashRoute
   '/login': typeof LoginRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/book': typeof BookRoute
+  '/booking-success': typeof BookingSuccessRoute
   '/contact': typeof ContactRoute
   '/flash': typeof FlashRoute
   '/login': typeof LoginRoute
@@ -105,6 +114,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/book'
+    | '/booking-success'
     | '/contact'
     | '/flash'
     | '/login'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/book'
+    | '/booking-success'
     | '/contact'
     | '/flash'
     | '/login'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/book'
+    | '/booking-success'
     | '/contact'
     | '/flash'
     | '/login'
@@ -139,6 +151,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   BookRoute: typeof BookRoute
+  BookingSuccessRoute: typeof BookingSuccessRoute
   ContactRoute: typeof ContactRoute
   FlashRoute: typeof FlashRoute
   LoginRoute: typeof LoginRoute
@@ -191,6 +204,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/booking-success': {
+      id: '/booking-success'
+      path: '/booking-success'
+      fullPath: '/booking-success'
+      preLoaderRoute: typeof BookingSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/book': {
       id: '/book'
       path: '/book'
@@ -219,6 +239,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   BookRoute: BookRoute,
+  BookingSuccessRoute: BookingSuccessRoute,
   ContactRoute: ContactRoute,
   FlashRoute: FlashRoute,
   LoginRoute: LoginRoute,

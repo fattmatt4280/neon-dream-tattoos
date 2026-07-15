@@ -23,7 +23,11 @@ function AdminPage() {
   }, [loading, user, nav]);
 
   if (loading) {
-    return <div className="min-h-screen grid place-items-center font-mono text-xs text-muted-foreground">LOADING…</div>;
+    return (
+      <div className="min-h-screen grid place-items-center font-mono text-xs text-muted-foreground">
+        LOADING…
+      </div>
+    );
   }
   if (!user) return null;
 
@@ -34,10 +38,13 @@ function AdminPage() {
           <p className="font-display text-3xl uppercase">No admin access</p>
           <p className="mt-2 text-muted-foreground text-sm">Signed in as {user.email}</p>
           <p className="mt-4 text-xs text-muted-foreground font-mono max-w-md">
-            Open Cloud → Database → user_roles and add a row with your user id and role <span className="text-magenta">admin</span>.
+            Open Cloud → Database → user_roles and add a row with your user id and role{" "}
+            <span className="text-magenta">admin</span>.
           </p>
           <button
-            onClick={async () => { await supabase.auth.signOut(); }}
+            onClick={async () => {
+              await supabase.auth.signOut();
+            }}
             className="mt-6 border border-border px-4 py-2 font-mono text-xs uppercase tracking-widest hover:border-magenta"
           >
             Sign out
@@ -52,12 +59,18 @@ function AdminPage() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border px-6 py-4 flex items-center justify-between">
         <Link to="/" className="font-display text-2xl uppercase">
-          SHYFTD<span className="text-magenta">INK</span><span className="text-xs text-muted-foreground ml-3 font-mono normal-case">/admin</span>
+          SHYFTD<span className="text-magenta">INK</span>
+          <span className="text-xs text-muted-foreground ml-3 font-mono normal-case">/admin</span>
         </Link>
         <div className="flex items-center gap-4">
-          <span className="font-mono text-xs text-muted-foreground hidden sm:inline">{user.email}</span>
+          <span className="font-mono text-xs text-muted-foreground hidden sm:inline">
+            {user.email}
+          </span>
           <button
-            onClick={async () => { await supabase.auth.signOut(); nav({ to: "/" }); }}
+            onClick={async () => {
+              await supabase.auth.signOut();
+              nav({ to: "/" });
+            }}
             className="flex items-center gap-2 border border-border px-3 py-1.5 font-mono text-xs uppercase hover:border-magenta hover:text-magenta"
           >
             <LogOut className="size-3" /> Out
@@ -87,7 +100,13 @@ function AdminPage() {
   );
 }
 
-type Field = { name: string; label: string; type?: "text" | "number" | "url" | "textarea" | "checkbox" | "select"; options?: string[]; required?: boolean };
+type Field = {
+  name: string;
+  label: string;
+  type?: "text" | "number" | "url" | "textarea" | "checkbox" | "select";
+  options?: string[];
+  required?: boolean;
+};
 
 const portfolioFields: Field[] = [
   { name: "title", label: "Title", required: true },
@@ -108,23 +127,37 @@ const merchFields: Field[] = [
   { name: "description", label: "Description", type: "textarea" },
   { name: "image_url", label: "Image URL", type: "url", required: true },
   { name: "price_cents", label: "Price (cents)", type: "number", required: true },
-  { name: "product_type", label: "Type", type: "select", options: ["print", "sticker", "apparel", "other"], required: true },
+  {
+    name: "product_type",
+    label: "Type",
+    type: "select",
+    options: ["print", "sticker", "apparel", "other"],
+    required: true,
+  },
   { name: "stock", label: "Stock", type: "number", required: true },
   { name: "active", label: "Active", type: "checkbox" },
 ];
 
-function ContentManager({ table, fields }: { table: "portfolio_items" | "flash_designs" | "merch_products"; fields: Field[] }) {
+function ContentManager({
+  table,
+  fields,
+}: {
+  table: "portfolio_items" | "flash_designs" | "merch_products";
+  fields: Field[];
+}) {
   const qc = useQueryClient();
   const [creating, setCreating] = useState(false);
   const { data = [], isLoading } = useQuery({
     queryKey: ["admin", table],
     queryFn: async () => {
-      const { data, error } = await supabase.from(table).select("*").order("created_at", { ascending: false });
+      const { data, error } = await supabase
+        .from(table)
+        .select("*")
+        .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
   });
-
 
   async function onDelete(id: string) {
     if (!confirm("Delete this item?")) return;
@@ -147,7 +180,14 @@ function ContentManager({ table, fields }: { table: "portfolio_items" | "flash_d
       </div>
 
       {creating && (
-        <CreateForm table={table} fields={fields} onDone={() => { setCreating(false); qc.invalidateQueries({ queryKey: ["admin", table] }); }} />
+        <CreateForm
+          table={table}
+          fields={fields}
+          onDone={() => {
+            setCreating(false);
+            qc.invalidateQueries({ queryKey: ["admin", table] });
+          }}
+        />
       )}
 
       {isLoading ? (
@@ -163,7 +203,11 @@ function ContentManager({ table, fields }: { table: "portfolio_items" | "flash_d
                 <p className="font-mono text-sm truncate">{row.title}</p>
                 <p className="font-mono text-[10px] text-muted-foreground truncate">{row.id}</p>
               </div>
-              <button onClick={() => onDelete(row.id)} className="text-destructive hover:text-magenta" aria-label="Delete">
+              <button
+                onClick={() => onDelete(row.id)}
+                className="text-destructive hover:text-magenta"
+                aria-label="Delete"
+              >
                 <Trash2 className="size-4" />
               </button>
             </div>
@@ -179,13 +223,19 @@ function BookingsManager() {
   const { data = [], isLoading } = useQuery({
     queryKey: ["admin", "bookings"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("bookings").select("*").order("created_at", { ascending: false });
+      const { data, error } = await supabase
+        .from("bookings")
+        .select("*")
+        .order("created_at", { ascending: false });
       if (error) throw error;
       return data;
     },
   });
 
-  async function updateStatus(id: string, status: "pending" | "confirmed" | "declined" | "completed") {
+  async function updateStatus(
+    id: string,
+    status: "pending" | "confirmed" | "declined" | "completed",
+  ) {
     const { error } = await supabase.from("bookings").update({ status }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Updated");
@@ -200,38 +250,84 @@ function BookingsManager() {
       {data.length === 0 ? (
         <p className="font-mono text-xs text-muted-foreground">No bookings yet.</p>
       ) : (
-        data.map((b: { id: string; client_name: string; client_email: string; phone: string | null; concept: string; status: string; preferred_date: string | null; created_at: string }) => (
-          <article key={b.id} className="border border-border p-5 bg-card">
-            <div className="flex justify-between items-start gap-4 flex-wrap">
-              <div>
-                <p className="font-display text-xl uppercase">{b.client_name}</p>
-                <p className="font-mono text-xs text-muted-foreground">{b.client_email} {b.phone && `· ${b.phone}`}</p>
-                <p className="font-mono text-[10px] text-muted-foreground mt-1">
-                  Submitted {new Date(b.created_at).toLocaleDateString()}{b.preferred_date && ` · prefers ${b.preferred_date}`}
-                </p>
+        data.map(
+          (b: {
+            id: string;
+            client_name: string;
+            client_email: string;
+            phone: string | null;
+            concept: string;
+            status: string;
+            preferred_date: string | null;
+            created_at: string;
+            body_location?: string | null;
+            session_length?: string | null;
+            deposit_paid?: boolean;
+          }) => (
+            <article key={b.id} className="border border-border p-5 bg-card">
+              <div className="flex justify-between items-start gap-4 flex-wrap">
+                <div>
+                  <p className="font-display text-xl uppercase">{b.client_name}</p>
+                  <p className="font-mono text-xs text-muted-foreground">
+                    {b.client_email} {b.phone && `· ${b.phone}`}
+                  </p>
+                  <p className="font-mono text-[10px] text-muted-foreground mt-1">
+                    Submitted {new Date(b.created_at).toLocaleDateString()}
+                    {b.preferred_date && ` · prefers ${b.preferred_date}`}
+                    {b.body_location && ` · ${b.body_location}`}
+                    {b.session_length && ` · ${b.session_length}`}
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                  {b.deposit_paid && (
+                    <span className="font-mono text-[10px] uppercase tracking-widest px-2 py-1 border border-acid text-acid">
+                      Deposit Paid
+                    </span>
+                  )}
+                  <span
+                    className={`font-mono text-[10px] uppercase tracking-widest px-2 py-1 border ${
+                      b.status === "confirmed"
+                        ? "border-acid text-acid"
+                        : b.status === "declined"
+                          ? "border-destructive text-destructive"
+                          : b.status === "completed"
+                            ? "border-cyan text-cyan"
+                            : "border-magenta text-magenta"
+                    }`}
+                  >
+                    {b.status}
+                  </span>
+                </div>
               </div>
-              <span className={`font-mono text-[10px] uppercase tracking-widest px-2 py-1 border ${
-                b.status === "confirmed" ? "border-acid text-acid" :
-                b.status === "declined" ? "border-destructive text-destructive" :
-                b.status === "completed" ? "border-cyan text-cyan" : "border-magenta text-magenta"
-              }`}>{b.status}</span>
-            </div>
-            <p className="mt-4 text-sm whitespace-pre-wrap">{b.concept}</p>
-            <div className="mt-4 flex gap-2 flex-wrap">
-              {(["pending", "confirmed", "declined", "completed"] as const).map((s) => (
-                <button key={s} onClick={() => updateStatus(b.id, s)} className="font-mono text-[10px] uppercase border border-border px-3 py-1 hover:border-magenta hover:text-magenta">
-                  {s}
-                </button>
-              ))}
-            </div>
-          </article>
-        ))
+              <p className="mt-4 text-sm whitespace-pre-wrap">{b.concept}</p>
+              <div className="mt-4 flex gap-2 flex-wrap">
+                {(["pending", "confirmed", "declined", "completed"] as const).map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => updateStatus(b.id, s)}
+                    className="font-mono text-[10px] uppercase border border-border px-3 py-1 hover:border-magenta hover:text-magenta"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </article>
+          ),
+        )
       )}
     </div>
   );
 }
 
-function CreateForm({ table, fields, onDone }: { table: "portfolio_items" | "flash_designs" | "merch_products"; fields: Field[]; onDone: () => void }) {
+function CreateForm({
+  table,
+  fields,
+  onDone,
+}: {
+  table: "portfolio_items" | "flash_designs" | "merch_products";
+  fields: Field[];
+  onDone: () => void;
+}) {
   const [values, setValues] = useState<Record<string, unknown>>({});
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -252,7 +348,9 @@ function CreateForm({ table, fields, onDone }: { table: "portfolio_items" | "fla
       });
       if (upErr) throw upErr;
       // Long-lived signed URL (10 years) since bucket is private
-      const { data, error } = await supabase.storage.from("portfolio").createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
+      const { data, error } = await supabase.storage
+        .from("portfolio")
+        .createSignedUrl(path, 60 * 60 * 24 * 365 * 10);
       if (error || !data) throw error ?? new Error("Failed to sign URL");
       setVal(fieldName, data.signedUrl);
       toast.success("Image uploaded");
@@ -288,7 +386,8 @@ function CreateForm({ table, fields, onDone }: { table: "portfolio_items" | "fla
         return (
           <label key={f.name} className="block">
             <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
-              {f.label}{f.required && <span className="text-magenta"> *</span>}
+              {f.label}
+              {f.required && <span className="text-magenta"> *</span>}
             </span>
             {f.type === "textarea" ? (
               <textarea
@@ -313,7 +412,11 @@ function CreateForm({ table, fields, onDone }: { table: "portfolio_items" | "fla
                 className="mt-1 w-full bg-background border border-border px-3 py-2 focus:outline-none focus:border-magenta"
               >
                 <option value="">—</option>
-                {f.options!.map((o) => <option key={o} value={o}>{o}</option>)}
+                {f.options!.map((o) => (
+                  <option key={o} value={o}>
+                    {o}
+                  </option>
+                ))}
               </select>
             ) : isImage ? (
               <div className="mt-1 space-y-2">
