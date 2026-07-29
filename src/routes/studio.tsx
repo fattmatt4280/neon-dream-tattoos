@@ -74,10 +74,8 @@ function StudioPage() {
         <div className="flex items-center gap-4">
           <span className="font-mono text-xs text-muted-foreground hidden sm:inline">{user.email}</span>
           <button
-            onClick={async () => {
-              await supabase.auth.signOut();
-              nav({ to: "/" });
-            }}
+            onClick={signOut}
+
             className="flex items-center gap-2 border border-border px-3 py-1.5 font-mono text-xs uppercase hover:border-magenta hover:text-magenta"
           >
             <LogOut className="size-3" /> Out
