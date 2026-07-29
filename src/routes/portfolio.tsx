@@ -48,6 +48,10 @@ function PortfolioPage() {
     },
   });
 
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+
+
   return (
     <Layout>
       <section className="px-6 pt-16 pb-12 border-b border-border">
