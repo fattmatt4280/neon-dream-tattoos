@@ -18,6 +18,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as MerchRouteImport } from './routes/merch'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as StudioRouteImport } from './routes/studio'
 import { Route as BookCancelRouteImport } from './routes/book.cancel'
 import { Route as BookSuccessRouteImport } from './routes/book.success'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -68,6 +69,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BookCancelRoute = BookCancelRouteImport.update({
   id: '/cancel',
   path: '/cancel',
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/merch': typeof MerchRoute
   '/portfolio': typeof PortfolioRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/studio': typeof StudioRoute
   '/book/cancel': typeof BookCancelRoute
   '/book/success': typeof BookSuccessRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/merch': typeof MerchRoute
   '/portfolio': typeof PortfolioRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/studio': typeof StudioRoute
   '/book/cancel': typeof BookCancelRoute
   '/book/success': typeof BookSuccessRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/merch': typeof MerchRoute
   '/portfolio': typeof PortfolioRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/studio': typeof StudioRoute
   '/book/cancel': typeof BookCancelRoute
   '/book/success': typeof BookSuccessRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
     | '/merch'
     | '/portfolio'
     | '/sitemap.xml'
+    | '/studio'
     | '/book/cancel'
     | '/book/success'
     | '/api/public/payments/webhook'
@@ -164,6 +174,7 @@ export interface FileRouteTypes {
     | '/merch'
     | '/portfolio'
     | '/sitemap.xml'
+    | '/studio'
     | '/book/cancel'
     | '/book/success'
     | '/api/public/payments/webhook'
@@ -179,6 +190,7 @@ export interface FileRouteTypes {
     | '/merch'
     | '/portfolio'
     | '/sitemap.xml'
+    | '/studio'
     | '/book/cancel'
     | '/book/success'
     | '/api/public/payments/webhook'
@@ -195,6 +207,7 @@ export interface RootRouteChildren {
   MerchRoute: typeof MerchRoute
   PortfolioRoute: typeof PortfolioRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  StudioRoute: typeof StudioRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
@@ -264,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/book/cancel': {
       id: '/book/cancel'
       path: '/cancel'
@@ -317,6 +337,7 @@ const rootRouteChildren: RootRouteChildren = {
   MerchRoute: MerchRoute,
   PortfolioRoute: PortfolioRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  StudioRoute: StudioRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
