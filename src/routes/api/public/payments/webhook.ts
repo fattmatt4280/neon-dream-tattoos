@@ -1,46 +1,34 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createClient } from "@supabase/supabase-js";
 import { type StripeEnv, verifyWebhook } from "@/lib/stripe.server";
 
 const NOTIFY_EMAIL = "shyftd.ink@gmail.com";
 
-let _supabase: ReturnType<typeof createClient> | null = null;
-function getSupabase() {
-  if (!_supabase) {
-    _supabase = createClient(
-      process.env.SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    );
-  }
-  return _supabase;
-}
-
 async function markBookingPaid(session: any) {
-  const bookingId = session.metadata?.booking_id;
+  const bookingId = session.metadata?.booking_id as string | undefined;
   if (!bookingId) {
     console.error("checkout.session.completed with no booking_id metadata", session.id);
     return;
   }
-  if (session.payment_status === "unpaid") return; // async payment method — wait for settlement
+  if (session.payment_status === "unpaid") return;
 
-  const { data: booking, error } = await getSupabase()
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+  const { data: booking, error } = await supabaseAdmin
     .from("bookings")
     .update({
       deposit_paid: true,
-      status: "deposit_paid",
+      status: "deposit_paid" as any,
       updated_at: new Date().toISOString(),
     })
     .eq("id", bookingId)
     .select("*")
     .single();
 
-  if (error) {
+  if (error || !booking) {
     console.error("Failed to update booking on webhook", error);
     return;
   }
 
-  // Best-effort notification. Requires Lovable Emails to be set up.
-  // Falls through silently if not yet configured so the webhook still 200s.
   try {
     const origin = process.env.SITE_ORIGIN ?? "http://localhost:8080";
     await fetch(`${origin}/lovable/email/transactional/send`, {
@@ -72,7 +60,6 @@ async function markBookingPaid(session: any) {
 
 async function handleWebhook(req: Request, env: StripeEnv) {
   const event = await verifyWebhook(req, env);
-
   switch (event.type) {
     case "checkout.session.completed":
     case "checkout.session.async_payment_succeeded":
@@ -82,7 +69,6 @@ async function handleWebhook(req: Request, env: StripeEnv) {
       console.warn("Deposit payment failed", event.data.object.id);
       break;
     default:
-      // Ignore other events (subscription.* etc are not used here)
       break;
   }
 }

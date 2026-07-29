@@ -18,6 +18,9 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BookSuccessRouteImport } from './routes/book.success'
+import { Route as BookCancelRouteImport } from './routes/book.cancel'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -64,40 +67,65 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookSuccessRoute = BookSuccessRouteImport.update({
+  id: '/success',
+  path: '/success',
+  getParentRoute: () => BookRoute,
+} as any)
+const BookCancelRoute = BookCancelRouteImport.update({
+  id: '/cancel',
+  path: '/cancel',
+  getParentRoute: () => BookRoute,
+} as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/book': typeof BookRoute
+  '/book': typeof BookRouteWithChildren
   '/contact': typeof ContactRoute
   '/flash': typeof FlashRoute
   '/login': typeof LoginRoute
   '/merch': typeof MerchRoute
   '/portfolio': typeof PortfolioRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/book/cancel': typeof BookCancelRoute
+  '/book/success': typeof BookSuccessRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/book': typeof BookRoute
+  '/book': typeof BookRouteWithChildren
   '/contact': typeof ContactRoute
   '/flash': typeof FlashRoute
   '/login': typeof LoginRoute
   '/merch': typeof MerchRoute
   '/portfolio': typeof PortfolioRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/book/cancel': typeof BookCancelRoute
+  '/book/success': typeof BookSuccessRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
-  '/book': typeof BookRoute
+  '/book': typeof BookRouteWithChildren
   '/contact': typeof ContactRoute
   '/flash': typeof FlashRoute
   '/login': typeof LoginRoute
   '/merch': typeof MerchRoute
   '/portfolio': typeof PortfolioRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/book/cancel': typeof BookCancelRoute
+  '/book/success': typeof BookSuccessRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +139,9 @@ export interface FileRouteTypes {
     | '/merch'
     | '/portfolio'
     | '/sitemap.xml'
+    | '/book/cancel'
+    | '/book/success'
+    | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +153,9 @@ export interface FileRouteTypes {
     | '/merch'
     | '/portfolio'
     | '/sitemap.xml'
+    | '/book/cancel'
+    | '/book/success'
+    | '/api/public/payments/webhook'
   id:
     | '__root__'
     | '/'
@@ -133,18 +167,22 @@ export interface FileRouteTypes {
     | '/merch'
     | '/portfolio'
     | '/sitemap.xml'
+    | '/book/cancel'
+    | '/book/success'
+    | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
-  BookRoute: typeof BookRoute
+  BookRoute: typeof BookRouteWithChildren
   ContactRoute: typeof ContactRoute
   FlashRoute: typeof FlashRoute
   LoginRoute: typeof LoginRoute
   MerchRoute: typeof MerchRoute
   PortfolioRoute: typeof PortfolioRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,19 +250,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/book/success': {
+      id: '/book/success'
+      path: '/success'
+      fullPath: '/book/success'
+      preLoaderRoute: typeof BookSuccessRouteImport
+      parentRoute: typeof BookRoute
+    }
+    '/book/cancel': {
+      id: '/book/cancel'
+      path: '/cancel'
+      fullPath: '/book/cancel'
+      preLoaderRoute: typeof BookCancelRouteImport
+      parentRoute: typeof BookRoute
+    }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
+
+interface BookRouteChildren {
+  BookCancelRoute: typeof BookCancelRoute
+  BookSuccessRoute: typeof BookSuccessRoute
+}
+
+const BookRouteChildren: BookRouteChildren = {
+  BookCancelRoute: BookCancelRoute,
+  BookSuccessRoute: BookSuccessRoute,
+}
+
+const BookRouteWithChildren = BookRoute._addFileChildren(BookRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
-  BookRoute: BookRoute,
+  BookRoute: BookRouteWithChildren,
   ContactRoute: ContactRoute,
   FlashRoute: FlashRoute,
   LoginRoute: LoginRoute,
   MerchRoute: MerchRoute,
   PortfolioRoute: PortfolioRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
