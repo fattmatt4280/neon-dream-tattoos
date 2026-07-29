@@ -17,49 +17,64 @@ export type Database = {
       bookings: {
         Row: {
           admin_notes: string | null
+          body_location: string | null
           client_email: string
           client_name: string
           concept: string
           created_at: string
+          deposit_amount_cents: number | null
+          deposit_paid: boolean
           id: string
           phone: string | null
           placement: string | null
           preferred_date: string | null
           reference_urls: string[] | null
+          session_length: string | null
           size_estimate: string | null
           status: Database["public"]["Enums"]["booking_status"]
+          stripe_session_id: string | null
           updated_at: string
           user_id: string | null
         }
         Insert: {
           admin_notes?: string | null
+          body_location?: string | null
           client_email: string
           client_name: string
           concept: string
           created_at?: string
+          deposit_amount_cents?: number | null
+          deposit_paid?: boolean
           id?: string
           phone?: string | null
           placement?: string | null
           preferred_date?: string | null
           reference_urls?: string[] | null
+          session_length?: string | null
           size_estimate?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
+          stripe_session_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
         Update: {
           admin_notes?: string | null
+          body_location?: string | null
           client_email?: string
           client_name?: string
           concept?: string
           created_at?: string
+          deposit_amount_cents?: number | null
+          deposit_paid?: boolean
           id?: string
           phone?: string | null
           placement?: string | null
           preferred_date?: string | null
           reference_urls?: string[] | null
+          session_length?: string | null
           size_estimate?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
+          stripe_session_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
