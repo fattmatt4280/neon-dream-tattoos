@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/use-auth";
 import { LogOut } from "lucide-react";
@@ -13,7 +13,19 @@ import {
 } from "@/components/studio/Managers";
 
 export const Route = createFileRoute("/studio")({
+  ssr: false,
   head: () => ({ meta: [{ title: "Studio — Shyftd Ink" }, { name: "robots", content: "noindex" }] }),
+  beforeLoad: async () => {
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) {
+      throw redirect({ to: "/login", search: { redirect: "/studio" } });
+    }
+    const { data: isAdmin } = await supabase.rpc("has_role", {
+      _user_id: data.user.id,
+      _role: "admin",
+    });
+    return { user: data.user, isAdmin: !!isAdmin };
+  },
   component: StudioPage,
 });
 
@@ -21,18 +33,10 @@ type Tab = "content" | "portfolio" | "flash" | "merch" | "bookings";
 const TABS: Tab[] = ["content", "portfolio", "flash", "merch", "bookings"];
 
 function StudioPage() {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, isAdmin } = Route.useRouteContext();
   const nav = useNavigate();
   const [tab, setTab] = useState<Tab>("content");
 
-  useEffect(() => {
-    if (!loading && !user) nav({ to: "/login" });
-  }, [loading, user, nav]);
-
-  if (loading) {
-    return <div className="min-h-screen grid place-items-center font-mono text-xs text-muted-foreground">LOADING…</div>;
-  }
-  if (!user) return null;
 
   if (!isAdmin) {
     return (
