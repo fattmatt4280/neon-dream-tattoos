@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Layout } from "@/components/site/Layout";
 import { Reveal } from "@/components/site/Reveal";
 import { SpotlightImage } from "@/components/site/SpotlightImage";
+import { Lightbox } from "@/components/site/Lightbox";
 
 import { supabase } from "@/integrations/supabase/client";
 import { seedPortfolio } from "@/lib/seed-content";
+
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
