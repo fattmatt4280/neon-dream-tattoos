@@ -200,7 +200,7 @@ function BookingsManager() {
       {data.length === 0 ? (
         <p className="font-mono text-xs text-muted-foreground">No bookings yet.</p>
       ) : (
-        data.map((b: { id: string; client_name: string; client_email: string; phone: string | null; concept: string; status: string; preferred_date: string | null; created_at: string }) => (
+        data.map((b: { id: string; client_name: string; client_email: string; phone: string | null; concept: string; status: string; preferred_date: string | null; created_at: string; body_location: string | null; session_length: string | null; deposit_paid: boolean; deposit_amount_cents: number | null }) => (
           <article key={b.id} className="border border-border p-5 bg-card">
             <div className="flex justify-between items-start gap-4 flex-wrap">
               <div>
@@ -208,13 +208,22 @@ function BookingsManager() {
                 <p className="font-mono text-xs text-muted-foreground">{b.client_email} {b.phone && `· ${b.phone}`}</p>
                 <p className="font-mono text-[10px] text-muted-foreground mt-1">
                   Submitted {new Date(b.created_at).toLocaleDateString()}{b.preferred_date && ` · prefers ${b.preferred_date}`}
+                  {b.body_location && ` · ${b.body_location}`}
+                  {b.session_length && ` · ${b.session_length}`}
                 </p>
               </div>
-              <span className={`font-mono text-[10px] uppercase tracking-widest px-2 py-1 border ${
-                b.status === "confirmed" ? "border-acid text-acid" :
-                b.status === "declined" ? "border-destructive text-destructive" :
-                b.status === "completed" ? "border-cyan text-cyan" : "border-magenta text-magenta"
-              }`}>{b.status}</span>
+              <div className="flex flex-col items-end gap-1">
+                <span className={`font-mono text-[10px] uppercase tracking-widest px-2 py-1 border ${
+                  b.status === "confirmed" ? "border-acid text-acid" :
+                  b.status === "declined" ? "border-destructive text-destructive" :
+                  b.status === "completed" ? "border-cyan text-cyan" : "border-magenta text-magenta"
+                }`}>{b.status}</span>
+                <span className={`font-mono text-[10px] uppercase tracking-widest px-2 py-1 border ${
+                  b.deposit_paid ? "border-acid text-acid" : "border-border text-muted-foreground"
+                }`}>
+                  {b.deposit_paid ? `✓ Deposit $${((b.deposit_amount_cents ?? 0) / 100).toFixed(0)}` : "No deposit"}
+                </span>
+              </div>
             </div>
             <p className="mt-4 text-sm whitespace-pre-wrap">{b.concept}</p>
             <div className="mt-4 flex gap-2 flex-wrap">
