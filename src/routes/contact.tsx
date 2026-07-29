@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout } from "@/components/site/Layout";
 import { Instagram, Twitter, Music2, Mail } from "lucide-react";
+import { useSiteContent } from "@/lib/site-content";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -45,12 +46,13 @@ export const Route = createFileRoute("/contact")({
 });
 
 function Contact() {
+  const { c } = useSiteContent();
   return (
     <Layout>
       <section className="px-6 pt-16 pb-12 border-b border-border">
         <div className="max-w-4xl mx-auto">
-          <p className="font-mono text-xs text-cyan tracking-[0.3em] uppercase mb-4">SIGNAL_OUT</p>
-          <h1 className="font-display text-6xl md:text-8xl uppercase leading-none">Contact</h1>
+          <p className="font-mono text-xs text-cyan tracking-[0.3em] uppercase mb-4">{c("contact.eyebrow")}</p>
+          <h1 className="font-display text-6xl md:text-8xl uppercase leading-none">{c("contact.title")}</h1>
         </div>
       </section>
 
@@ -59,20 +61,17 @@ function Contact() {
           <div>
             <h2 className="font-display text-2xl uppercase mb-6">Direct</h2>
             <ul className="space-y-4">
-              <li className="flex items-center gap-3"><Mail className="size-4 text-magenta" /> <a href="mailto:studio@shyftdink.com" className="hover:text-magenta">studio@shyftdink.com</a></li>
-              <li className="flex items-center gap-3"><Instagram className="size-4 text-magenta" /> <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-magenta">@shyftdink</a></li>
-              <li className="flex items-center gap-3"><Music2 className="size-4 text-magenta" /> <a href="https://tiktok.com" target="_blank" rel="noreferrer" className="hover:text-magenta">@shyftdink</a></li>
-              <li className="flex items-center gap-3"><Twitter className="size-4 text-magenta" /> <a href="https://twitter.com" target="_blank" rel="noreferrer" className="hover:text-magenta">@shyftdink</a></li>
+              <li className="flex items-center gap-3"><Mail className="size-4 text-magenta" /> <a href={`mailto:${c("contact.email")}`} className="hover:text-magenta">{c("contact.email")}</a></li>
+              <li className="flex items-center gap-3"><Instagram className="size-4 text-magenta" /> <a href={c("contact.instagram_url")} target="_blank" rel="noreferrer" className="hover:text-magenta">{c("contact.instagram_handle")}</a></li>
+              <li className="flex items-center gap-3"><Music2 className="size-4 text-magenta" /> <a href={c("contact.tiktok_url")} target="_blank" rel="noreferrer" className="hover:text-magenta">{c("contact.tiktok_handle")}</a></li>
+              <li className="flex items-center gap-3"><Twitter className="size-4 text-magenta" /> <a href={c("contact.twitter_url")} target="_blank" rel="noreferrer" className="hover:text-magenta">{c("contact.twitter_handle")}</a></li>
             </ul>
           </div>
           <div>
             <h2 className="font-display text-2xl uppercase mb-6">Studio</h2>
-            <p className="text-muted-foreground">
-              By appointment only. Submit a booking request and I'll send the address with your confirmation.
-            </p>
-            <p className="mt-4 font-mono text-xs text-muted-foreground uppercase tracking-widest leading-relaxed">
-              Hours: Tue–Sat / 12pm – Late<br />
-              Response time: within 48h
+            <p className="text-muted-foreground">{c("contact.studio_body")}</p>
+            <p className="mt-4 font-mono text-xs text-muted-foreground uppercase tracking-widest leading-relaxed whitespace-pre-line">
+              {c("contact.hours")}
             </p>
           </div>
         </div>
