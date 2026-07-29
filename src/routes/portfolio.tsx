@@ -68,14 +68,12 @@ function PortfolioPage() {
               {data.map((item, i) => (
                 <Reveal key={item.id} delay={(i % 6) * 60}>
                   <figure className={`group relative overflow-hidden aspect-[4/5] bg-card border border-border ${i % 5 === 1 ? "md:mt-12" : ""}`}>
-                    <img
+                    <SpotlightImage
                       src={item.image_url}
                       alt={item.title}
-                      loading="lazy"
-                      width={800}
-                      height={1000}
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-[1.03] transition-all duration-700"
+                      className="w-full h-full"
                     />
+
                     <figcaption className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-background via-background/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                       <p className="font-mono text-[10px] text-magenta uppercase tracking-widest">#{String(i + 1).padStart(3, "0")}</p>
                       <p className="font-display text-lg uppercase mt-1">{item.title}</p>
