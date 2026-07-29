@@ -84,7 +84,7 @@ export function SpotlightImage({
   return (
     <div
       ref={wrap}
-      className={`relative overflow-hidden touch-none ${className}`}
+      className={`relative overflow-hidden ${className}`}
       style={
         {
           "--sx": "50%",
