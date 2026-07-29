@@ -1,11 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Layout } from "@/components/site/Layout";
 import { Reveal } from "@/components/site/Reveal";
 import { SpotlightImage } from "@/components/site/SpotlightImage";
+import { Lightbox } from "@/components/site/Lightbox";
 
 import { supabase } from "@/integrations/supabase/client";
 import { seedPortfolio } from "@/lib/seed-content";
+
 
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
@@ -45,6 +48,10 @@ function PortfolioPage() {
     },
   });
 
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+
+
   return (
     <Layout>
       <section className="px-6 pt-16 pb-12 border-b border-border">
@@ -69,7 +76,19 @@ function PortfolioPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
               {data.map((item, i) => (
                 <Reveal key={item.id} delay={(i % 6) * 60}>
-                  <figure className={`group relative overflow-hidden aspect-[4/5] bg-card border border-border ${i % 5 === 1 ? "md:mt-12" : ""}`}>
+                  <figure
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Open full preview of ${item.title}`}
+                    onClick={() => setLightboxIndex(i)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setLightboxIndex(i);
+                      }
+                    }}
+                    className={`group relative overflow-hidden aspect-[4/5] bg-card border border-border cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan ${i % 5 === 1 ? "md:mt-12" : ""}`}
+                  >
                     <SpotlightImage
                       src={item.image_url}
                       alt={item.title}
@@ -89,12 +108,21 @@ function PortfolioPage() {
                       ) : null}
                     </figcaption>
                   </figure>
+
                 </Reveal>
               ))}
             </div>
           )}
         </div>
       </section>
+
+      <Lightbox
+        items={data as never}
+        index={lightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        onIndexChange={setLightboxIndex}
+      />
+
     </Layout>
   );
 }
