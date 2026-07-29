@@ -17,7 +17,6 @@ async function markBookingPaid(session: any) {
     .from("bookings")
     .update({
       deposit_paid: true,
-      status: "deposit_paid" as any,
       updated_at: new Date().toISOString(),
     })
     .eq("id", bookingId)
