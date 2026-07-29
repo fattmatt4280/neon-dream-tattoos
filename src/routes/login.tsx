@@ -5,7 +5,15 @@ import { lovable } from "@/integrations/lovable";
 import { toast } from "sonner";
 import { Chrome } from "lucide-react";
 
+function sanitizeRedirect(value: unknown): string {
+  const v = typeof value === "string" ? value : "";
+  return v.startsWith("/") && !v.startsWith("//") ? v : "/studio";
+}
+
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: sanitizeRedirect(search.redirect),
+  }),
   head: () => ({
     meta: [
       { title: "Admin Login — Shyftd Ink" },
@@ -18,6 +26,7 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const nav = useNavigate();
+  const { redirect } = Route.useSearch();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [busy, setBusy] = useState(false);
 
@@ -32,12 +41,12 @@ function LoginPage() {
       setBusy(false);
       if (error) return toast.error(error.message);
       toast.success("Welcome back");
-      nav({ to: "/admin" });
+      nav({ to: redirect });
     } else {
       const { error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: window.location.origin + "/admin" },
+        options: { emailRedirectTo: window.location.origin + redirect },
       });
       setBusy(false);
       if (error) return toast.error(error.message);
@@ -54,8 +63,9 @@ function LoginPage() {
     if (result.error) return toast.error(result.error.message);
     if (result.redirected) return;
     toast.success("Welcome back");
-    nav({ to: "/admin" });
+    nav({ to: redirect });
   }
+
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-background">
