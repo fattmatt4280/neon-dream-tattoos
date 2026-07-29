@@ -35,8 +35,15 @@ const TABS: Tab[] = ["content", "portfolio", "flash", "merch", "bookings"];
 function StudioPage() {
   const { user, isAdmin } = Route.useRouteContext();
   const nav = useNavigate();
+  const qc = useQueryClient();
   const [tab, setTab] = useState<Tab>("content");
 
+  async function signOut() {
+    await qc.cancelQueries();
+    qc.clear();
+    await supabase.auth.signOut();
+    nav({ to: "/login", search: { redirect: "/studio" }, replace: true });
+  }
 
   if (!isAdmin) {
     return (
@@ -45,9 +52,7 @@ function StudioPage() {
           <p className="font-display text-3xl uppercase">No studio access</p>
           <p className="mt-2 text-muted-foreground text-sm">Signed in as {user.email}</p>
           <button
-            onClick={async () => {
-              await supabase.auth.signOut();
-            }}
+            onClick={signOut}
             className="mt-6 border border-border px-4 py-2 font-mono text-xs uppercase tracking-widest hover:border-magenta"
           >
             Sign out
@@ -57,6 +62,7 @@ function StudioPage() {
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen bg-background">
