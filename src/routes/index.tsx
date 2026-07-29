@@ -4,6 +4,8 @@ import { Layout } from "@/components/site/Layout";
 import { Reveal } from "@/components/site/Reveal";
 import { supabase } from "@/integrations/supabase/client";
 import { HERO_IMAGE, seedPortfolio, fmtPrice, seedFlash } from "@/lib/seed-content";
+import { useSiteContent } from "@/lib/site-content";
+import { SmartLink } from "@/components/site/SmartLink";
 import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/")({
