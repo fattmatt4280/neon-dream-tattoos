@@ -115,6 +115,14 @@ function PortfolioPage() {
           )}
         </div>
       </section>
+
+      <Lightbox
+        items={data as never}
+        index={lightboxIndex}
+        onClose={() => setLightboxIndex(null)}
+        onIndexChange={setLightboxIndex}
+      />
+
     </Layout>
   );
 }
