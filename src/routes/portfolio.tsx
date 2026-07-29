@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Layout } from "@/components/site/Layout";
 import { Reveal } from "@/components/site/Reveal";
+import { SpotlightImage } from "@/components/site/SpotlightImage";
+
 import { supabase } from "@/integrations/supabase/client";
 import { seedPortfolio } from "@/lib/seed-content";
 
