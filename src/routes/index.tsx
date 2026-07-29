@@ -36,6 +36,10 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const { c } = useSiteContent();
+  const marquee = c("home.marquee").split(",").map((s) => s.trim()).filter(Boolean);
+  const marqueeColors = ["", "text-magenta", "", "text-cyan", "", "text-acid", ""];
+
   const { data: featured = seedPortfolio } = useQuery({
     queryKey: ["portfolio", "featured"],
     queryFn: async () => {
@@ -68,33 +72,31 @@ function Home() {
         />
         <div className="relative z-10 text-center px-6">
           <p className="font-mono text-cyan tracking-[0.4em] text-xs md:text-sm mb-6 animate-fade-up">
-            COLOR REALISM // NEON SURREALISM
+            {c("home.hero_eyebrow")}
           </p>
           <h1 className="font-display text-[18vw] md:text-[12vw] leading-[0.85] uppercase tracking-tighter animate-fade-up">
-            SHYFTD<span className="text-magenta flicker px-2 md:px-4">INK</span>
+            {c("home.hero_title")}<span className="text-magenta flicker px-2 md:px-4">{c("home.hero_title_accent")}</span>
             <span className="sr-only"> — Neon Color Realism Tattoo Studio</span>
           </h1>
           <p className="mt-6 max-w-xl mx-auto text-muted-foreground text-sm md:text-base animate-fade-up" style={{ animationDelay: "120ms" }}>
-            Custom neon tattoos. Pop culture portraits, color realism, graffiti surrealism — booked from shyftdink.com.
+            {c("home.hero_subtitle")}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3 animate-fade-up" style={{ animationDelay: "240ms" }}>
-            <Link to="/book" className="bg-magenta px-6 py-3 font-mono text-xs uppercase tracking-widest text-white hover:bg-cyan hover:text-background transition-colors shadow-neon-magenta">
-              Book a Session
-            </Link>
-            <Link to="/portfolio" className="border border-border px-6 py-3 font-mono text-xs uppercase tracking-widest hover:border-magenta hover:text-magenta transition-colors">
-              View Portfolio
-            </Link>
+            <SmartLink href={c("home.hero_cta1_href")} className="bg-magenta px-6 py-3 font-mono text-xs uppercase tracking-widest text-white hover:bg-cyan hover:text-background transition-colors shadow-neon-magenta">
+              {c("home.hero_cta1_label")}
+            </SmartLink>
+            <SmartLink href={c("home.hero_cta2_href")} className="border border-border px-6 py-3 font-mono text-xs uppercase tracking-widest hover:border-magenta hover:text-magenta transition-colors">
+              {c("home.hero_cta2_label")}
+            </SmartLink>
           </div>
         </div>
 
         <div className="hidden md:flex absolute bottom-8 inset-x-0 px-12 justify-between items-end z-10">
-          <div className="font-mono text-[10px] text-muted-foreground uppercase leading-relaxed">
-            [Studio: by appointment]<br />
-            [Status: accepting bookings]<br />
-            [Domain: shyftdink.com]
+          <div className="font-mono text-[10px] text-muted-foreground uppercase leading-relaxed whitespace-pre-line">
+            {c("home.hero_status")}
           </div>
           <img
-            src={HERO_IMAGE}
+            src={c("home.hero_image")}
             alt="Featured neon color realism tattoo by Shyftd Ink"
             width={288}
             height={384}
@@ -109,13 +111,9 @@ function Home() {
         <div className="flex gap-12 animate-marquee whitespace-nowrap font-mono text-xs uppercase tracking-[0.3em] text-muted-foreground">
           {Array.from({ length: 2 }).map((_, i) => (
             <div key={i} className="flex gap-12">
-              <span>● Color Realism</span>
-              <span className="text-magenta">● Pop Culture</span>
-              <span>● Graffiti Surrealism</span>
-              <span className="text-cyan">● Custom Flash</span>
-              <span>● Neon Portraits</span>
-              <span className="text-acid">● Cover-ups</span>
-              <span>● Sleeves</span>
+              {marquee.map((m, j) => (
+                <span key={m + j} className={marqueeColors[j % marqueeColors.length]}>● {m}</span>
+              ))}
             </div>
           ))}
         </div>
@@ -125,9 +123,9 @@ function Home() {
       <section className="py-24 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-baseline border-b border-border pb-4 mb-12">
-            <h2 className="font-display text-4xl md:text-5xl uppercase">The Gallery</h2>
+            <h2 className="font-display text-4xl md:text-5xl uppercase">{c("home.gallery_heading")}</h2>
             <Link to="/portfolio" className="font-mono text-xs text-cyan hover:text-magenta transition-colors">
-              VIEW_ALL →
+              {c("home.gallery_link_label")}
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -158,10 +156,10 @@ function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-baseline mb-12">
             <h2 className="font-display text-4xl md:text-5xl uppercase">
-              <span className="text-magenta">Ready</span> To Ink
+              <span className="text-magenta">{c("home.flash_heading")}</span> {c("home.flash_heading_rest")}
             </h2>
             <Link to="/flash" className="font-mono text-xs text-magenta hover:text-cyan transition-colors">
-              ALL_FLASH →
+              {c("home.flash_link_label")}
             </Link>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -190,17 +188,17 @@ function Home() {
         <div className="relative max-w-4xl mx-auto px-6 text-center">
           <Reveal>
             <h2 className="font-display text-6xl md:text-8xl uppercase leading-none">
-              Claim Your<br /><span className="text-magenta">Canvas</span>
+              {c("home.cta_heading1")}<br /><span className="text-magenta">{c("home.cta_heading2")}</span>
             </h2>
             <p className="mt-6 text-muted-foreground max-w-lg mx-auto">
-              Custom concepts, available flash, or a full sleeve plan. Send your idea and we'll build it.
+              {c("home.cta_body")}
             </p>
-            <Link
-              to="/book"
+            <SmartLink
+              href={c("home.cta_button_href")}
               className="mt-10 inline-flex items-center gap-3 bg-magenta px-10 py-5 font-display text-xl uppercase tracking-widest text-white hover:bg-cyan hover:text-background transition-colors shadow-neon-magenta"
             >
-              Book The Chair <ArrowRight className="size-5" />
-            </Link>
+              {c("home.cta_button_label")} <ArrowRight className="size-5" />
+            </SmartLink>
           </Reveal>
         </div>
       </section>
