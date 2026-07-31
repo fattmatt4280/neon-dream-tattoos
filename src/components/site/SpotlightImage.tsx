@@ -87,6 +87,7 @@ export function SpotlightImage({
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
+      ro.disconnect();
       el.removeEventListener("pointermove", move);
       el.removeEventListener("pointerdown", move);
       el.removeEventListener("pointerleave", leave);
