@@ -26,35 +26,52 @@ export function SpotlightImage({
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let raf = 0;
     let visible = true;
+    let box = el.getBoundingClientRect();
+    let tx = box.width / 2;
+    let ty = box.height / 2;
+    let cx = tx;
+    let cy = ty;
+
+    const ro = new ResizeObserver(() => {
+      box = el.getBoundingClientRect();
+    });
+    ro.observe(el);
 
     const io = new IntersectionObserver(([e]) => {
       visible = e.isIntersecting;
+      if (visible) box = el.getBoundingClientRect();
     });
     io.observe(el);
 
     const set = (x: number, y: number) => {
-      el.style.setProperty("--sx", `${x}px`);
-      el.style.setProperty("--sy", `${y}px`);
+      el.style.setProperty("--sx", `${x.toFixed(1)}px`);
+      el.style.setProperty("--sy", `${y.toFixed(1)}px`);
     };
 
     const loop = (t: number) => {
       raf = requestAnimationFrame(loop);
-      if (!visible || active.current) return;
-      const r = el.getBoundingClientRect();
-      const s = seed.current;
-      const x = r.width * (0.5 + 0.34 * Math.sin(t / 2600 + s));
-      const y = r.height * (0.5 + 0.32 * Math.cos(t / 1900 + s * 1.7));
-      set(x, y);
+      if (!visible) return;
+      if (!active.current) {
+        const s = seed.current;
+        tx = box.width * (0.5 + 0.34 * Math.sin(t / 1300 + s));
+        ty = box.height * (0.5 + 0.32 * Math.cos(t / 950 + s * 1.7));
+      }
+      // fast easing toward the target keeps it snappy but smooth
+      const k = active.current ? 0.45 : 0.25;
+      cx += (tx - cx) * k;
+      cy += (ty - cy) * k;
+      set(cx, cy);
     };
 
     if (!reduce) raf = requestAnimationFrame(loop);
-    else set(el.clientWidth / 2, el.clientHeight / 2);
+    else set(box.width / 2, box.height / 2);
 
     const move = (e: PointerEvent) => {
-      const r = el.getBoundingClientRect();
       active.current = true;
       el.style.setProperty("--sr", `${radius * 1.25}px`);
-      set(e.clientX - r.left, e.clientY - r.top);
+      tx = e.clientX - box.left;
+      ty = e.clientY - box.top;
+      if (reduce) set(tx, ty);
     };
     const leave = () => {
       active.current = false;
@@ -70,6 +87,7 @@ export function SpotlightImage({
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
+      ro.disconnect();
       el.removeEventListener("pointermove", move);
       el.removeEventListener("pointerdown", move);
       el.removeEventListener("pointerleave", leave);
@@ -90,6 +108,7 @@ export function SpotlightImage({
           "--sx": "50%",
           "--sy": "50%",
           "--sr": `${radius}px`,
+          contain: "paint",
         } as React.CSSProperties
       }
     >
@@ -97,6 +116,7 @@ export function SpotlightImage({
         src={src}
         alt={alt}
         loading="lazy"
+        decoding="async"
         width={800}
         height={1000}
         className="w-full h-full object-cover grayscale contrast-125"
@@ -106,8 +126,9 @@ export function SpotlightImage({
         alt=""
         aria-hidden
         loading="lazy"
+        decoding="async"
         className="absolute inset-0 w-full h-full object-cover saturate-150"
-        style={{ maskImage: mask, WebkitMaskImage: mask }}
+        style={{ maskImage: mask, WebkitMaskImage: mask, willChange: "mask-image", transform: "translateZ(0)" }}
       />
       <div
         aria-hidden
