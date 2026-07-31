@@ -108,6 +108,7 @@ export function SpotlightImage({
           "--sx": "50%",
           "--sy": "50%",
           "--sr": `${radius}px`,
+          contain: "paint",
         } as React.CSSProperties
       }
     >
@@ -115,6 +116,7 @@ export function SpotlightImage({
         src={src}
         alt={alt}
         loading="lazy"
+        decoding="async"
         width={800}
         height={1000}
         className="w-full h-full object-cover grayscale contrast-125"
@@ -124,8 +126,9 @@ export function SpotlightImage({
         alt=""
         aria-hidden
         loading="lazy"
+        decoding="async"
         className="absolute inset-0 w-full h-full object-cover saturate-150"
-        style={{ maskImage: mask, WebkitMaskImage: mask }}
+        style={{ maskImage: mask, WebkitMaskImage: mask, willChange: "mask-image", transform: "translateZ(0)" }}
       />
       <div
         aria-hidden
