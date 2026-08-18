@@ -158,11 +158,19 @@
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
+@keyframes shift-diagonal {
+  0%, 100% { clip-path: polygon(38% 0%, 100% 0%, 100% 100%, 62% 100%); }
+  50% { clip-path: polygon(62% 0%, 100% 0%, 100% 100%, 38% 100%); }
+}
 
 .flicker { animation: flicker 3s linear infinite; }
 .pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
 .animate-fade-up { animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
 .animate-marquee { animation: scroll-x 30s linear infinite; }
+.animate-shift-diagonal { animation: shift-diagonal 8s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-shift-diagonal { animation: none; clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%); }
+}
 
 .reveal {
   opacity: 0;
