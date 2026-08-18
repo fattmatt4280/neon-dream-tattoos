@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Layout } from "@/components/site/Layout";
 import { Reveal } from "@/components/site/Reveal";
+import { SpotlightImage } from "@/components/site/SpotlightImage";
 import { supabase } from "@/integrations/supabase/client";
 import { HERO_IMAGE, seedPortfolio, fmtPrice, seedFlash } from "@/lib/seed-content";
 import { useSiteContent } from "@/lib/site-content";
@@ -143,14 +144,7 @@ function Home() {
             {featured.slice(0, 3).map((item, i) => (
               <Reveal key={item.id} delay={i * 80}>
                 <Link to="/portfolio" className="group block relative overflow-hidden aspect-[4/5] bg-card border border-border">
-                  <img
-                    src={item.image_url}
-                    alt={item.title}
-                    loading="lazy"
-                    width={800}
-                    height={1000}
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-                  />
+                  <SpotlightImage src={item.image_url} alt={item.title} className="w-full h-full" />
                   <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-background via-background/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                     <p className="font-mono text-[10px] text-cyan uppercase">#{String(i + 1).padStart(3, "0")}_{item.title.replace(/\s+/g, "_").toUpperCase()}</p>
                     <p className="text-sm mt-1 text-foreground">{item.description}</p>
