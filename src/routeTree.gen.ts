@@ -21,6 +21,12 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as BookCancelRouteImport } from './routes/book.cancel'
 import { Route as BookSuccessRouteImport } from './routes/book.success'
+import { Route as StudioIndexRouteImport } from './routes/studio.index'
+import { Route as StudioBookingsRouteImport } from './routes/studio.bookings'
+import { Route as StudioContentRouteImport } from './routes/studio.content'
+import { Route as StudioFlashRouteImport } from './routes/studio.flash'
+import { Route as StudioMerchRouteImport } from './routes/studio.merch'
+import { Route as StudioPortfolioRouteImport } from './routes/studio.portfolio'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 
@@ -84,6 +90,36 @@ const BookSuccessRoute = BookSuccessRouteImport.update({
   path: '/success',
   getParentRoute: () => BookRoute,
 } as any)
+const StudioIndexRoute = StudioIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioBookingsRoute = StudioBookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioContentRoute = StudioContentRouteImport.update({
+  id: '/content',
+  path: '/content',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioFlashRoute = StudioFlashRouteImport.update({
+  id: '/flash',
+  path: '/flash',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioMerchRoute = StudioMerchRouteImport.update({
+  id: '/merch',
+  path: '/merch',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioPortfolioRoute = StudioPortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => StudioRoute,
+} as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -107,9 +143,15 @@ export interface FileRoutesByFullPath {
   '/merch': typeof MerchRoute
   '/portfolio': typeof PortfolioRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/studio': typeof StudioRoute
+  '/studio': typeof StudioRouteWithChildren
   '/book/cancel': typeof BookCancelRoute
   '/book/success': typeof BookSuccessRoute
+  '/studio/bookings': typeof StudioBookingsRoute
+  '/studio/content': typeof StudioContentRoute
+  '/studio/flash': typeof StudioFlashRoute
+  '/studio/merch': typeof StudioMerchRoute
+  '/studio/portfolio': typeof StudioPortfolioRoute
+  '/studio/': typeof StudioIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
@@ -123,9 +165,14 @@ export interface FileRoutesByTo {
   '/merch': typeof MerchRoute
   '/portfolio': typeof PortfolioRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/studio': typeof StudioRoute
   '/book/cancel': typeof BookCancelRoute
   '/book/success': typeof BookSuccessRoute
+  '/studio/bookings': typeof StudioBookingsRoute
+  '/studio/content': typeof StudioContentRoute
+  '/studio/flash': typeof StudioFlashRoute
+  '/studio/merch': typeof StudioMerchRoute
+  '/studio/portfolio': typeof StudioPortfolioRoute
+  '/studio': typeof StudioIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
@@ -140,9 +187,15 @@ export interface FileRoutesById {
   '/merch': typeof MerchRoute
   '/portfolio': typeof PortfolioRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
-  '/studio': typeof StudioRoute
+  '/studio': typeof StudioRouteWithChildren
   '/book/cancel': typeof BookCancelRoute
   '/book/success': typeof BookSuccessRoute
+  '/studio/bookings': typeof StudioBookingsRoute
+  '/studio/content': typeof StudioContentRoute
+  '/studio/flash': typeof StudioFlashRoute
+  '/studio/merch': typeof StudioMerchRoute
+  '/studio/portfolio': typeof StudioPortfolioRoute
+  '/studio/': typeof StudioIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
@@ -161,6 +214,12 @@ export interface FileRouteTypes {
     | '/studio'
     | '/book/cancel'
     | '/book/success'
+    | '/studio/bookings'
+    | '/studio/content'
+    | '/studio/flash'
+    | '/studio/merch'
+    | '/studio/portfolio'
+    | '/studio/'
     | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
@@ -174,9 +233,14 @@ export interface FileRouteTypes {
     | '/merch'
     | '/portfolio'
     | '/sitemap.xml'
-    | '/studio'
     | '/book/cancel'
     | '/book/success'
+    | '/studio/bookings'
+    | '/studio/content'
+    | '/studio/flash'
+    | '/studio/merch'
+    | '/studio/portfolio'
+    | '/studio'
     | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
   id:
@@ -193,6 +257,12 @@ export interface FileRouteTypes {
     | '/studio'
     | '/book/cancel'
     | '/book/success'
+    | '/studio/bookings'
+    | '/studio/content'
+    | '/studio/flash'
+    | '/studio/merch'
+    | '/studio/portfolio'
+    | '/studio/'
     | '/api/public/payments/webhook'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
@@ -207,7 +277,7 @@ export interface RootRouteChildren {
   MerchRoute: typeof MerchRoute
   PortfolioRoute: typeof PortfolioRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
-  StudioRoute: typeof StudioRoute
+  StudioRoute: typeof StudioRouteWithChildren
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
@@ -298,6 +368,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookSuccessRouteImport
       parentRoute: typeof BookRoute
     }
+    '/studio/': {
+      id: '/studio/'
+      path: '/'
+      fullPath: '/studio/'
+      preLoaderRoute: typeof StudioIndexRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/studio/bookings': {
+      id: '/studio/bookings'
+      path: '/bookings'
+      fullPath: '/studio/bookings'
+      preLoaderRoute: typeof StudioBookingsRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/studio/content': {
+      id: '/studio/content'
+      path: '/content'
+      fullPath: '/studio/content'
+      preLoaderRoute: typeof StudioContentRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/studio/flash': {
+      id: '/studio/flash'
+      path: '/flash'
+      fullPath: '/studio/flash'
+      preLoaderRoute: typeof StudioFlashRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/studio/merch': {
+      id: '/studio/merch'
+      path: '/merch'
+      fullPath: '/studio/merch'
+      preLoaderRoute: typeof StudioMerchRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/studio/portfolio': {
+      id: '/studio/portfolio'
+      path: '/portfolio'
+      fullPath: '/studio/portfolio'
+      preLoaderRoute: typeof StudioPortfolioRouteImport
+      parentRoute: typeof StudioRoute
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -327,6 +439,27 @@ const BookRouteChildren: BookRouteChildren = {
 
 const BookRouteWithChildren = BookRoute._addFileChildren(BookRouteChildren)
 
+interface StudioRouteChildren {
+  StudioBookingsRoute: typeof StudioBookingsRoute
+  StudioContentRoute: typeof StudioContentRoute
+  StudioFlashRoute: typeof StudioFlashRoute
+  StudioMerchRoute: typeof StudioMerchRoute
+  StudioPortfolioRoute: typeof StudioPortfolioRoute
+  StudioIndexRoute: typeof StudioIndexRoute
+}
+
+const StudioRouteChildren: StudioRouteChildren = {
+  StudioBookingsRoute: StudioBookingsRoute,
+  StudioContentRoute: StudioContentRoute,
+  StudioFlashRoute: StudioFlashRoute,
+  StudioMerchRoute: StudioMerchRoute,
+  StudioPortfolioRoute: StudioPortfolioRoute,
+  StudioIndexRoute: StudioIndexRoute,
+}
+
+const StudioRouteWithChildren =
+  StudioRoute._addFileChildren(StudioRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
@@ -337,7 +470,7 @@ const rootRouteChildren: RootRouteChildren = {
   MerchRoute: MerchRoute,
   PortfolioRoute: PortfolioRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
-  StudioRoute: StudioRoute,
+  StudioRoute: StudioRouteWithChildren,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
