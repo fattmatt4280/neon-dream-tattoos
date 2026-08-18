@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { type StripeEnv, verifyWebhook } from "@/lib/stripe.server";
+import { sendTransactionalEmail } from "@/lib/email";
+import { BOOKING_TYPE_LABELS, type BookingType } from "@/lib/booking.functions";
 
 const NOTIFY_EMAIL = "shyftd.ink@gmail.com";
 
@@ -28,33 +30,22 @@ async function markBookingPaid(session: any) {
     return;
   }
 
-  try {
-    const origin = process.env.SITE_ORIGIN ?? "http://localhost:8080";
-    await fetch(`${origin}/lovable/email/transactional/send`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.LOVABLE_API_KEY}`,
-      },
-      body: JSON.stringify({
-        templateName: "booking-notification",
-        recipientEmail: NOTIFY_EMAIL,
-        idempotencyKey: `booking-${bookingId}`,
-        templateData: {
-          clientName: booking.client_name,
-          clientEmail: booking.client_email,
-          phone: booking.phone,
-          concept: booking.concept,
-          bodyLocation: booking.body_location,
-          sessionLength: booking.session_length,
-          preferredDate: booking.preferred_date,
-          bookingId,
-        },
-      }),
-    });
-  } catch (e) {
-    console.error("Booking notification email failed (non-fatal)", e);
-  }
+  await sendTransactionalEmail({
+    templateName: "booking-notification",
+    recipientEmail: NOTIFY_EMAIL,
+    idempotencyKey: `booking-paid-${bookingId}`,
+    templateData: {
+      clientName: booking.client_name,
+      clientEmail: booking.client_email,
+      phone: booking.phone,
+      concept: booking.concept,
+      bodyLocation: booking.body_location,
+      bookingType: booking.booking_type ? BOOKING_TYPE_LABELS[booking.booking_type as BookingType] : undefined,
+      preferredDate: booking.preferred_date,
+      bookingId,
+      depositPaid: true,
+    },
+  });
 }
 
 async function handleWebhook(req: Request, env: StripeEnv) {

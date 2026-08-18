@@ -3,6 +3,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { approveBooking, BOOKING_TYPE_LABELS, type BookingType } from "@/lib/booking.functions";
+import { getStripeEnvironment } from "@/lib/stripe";
 
 export const Route = createFileRoute("/studio/bookings")({
   component: BookingsAdmin,
@@ -18,23 +20,29 @@ interface Booking {
   concept: string;
   placement: string | null;
   body_location: string | null;
-  session_length: string | null;
   size_estimate: string | null;
   reference_urls: string[] | null;
   status: Status;
   admin_notes: string | null;
   preferred_date: string | null;
+  booking_type: BookingType | null;
   deposit_paid: boolean;
   deposit_amount_cents: number | null;
+  payment_link_url: string | null;
   created_at: string;
 }
 
-const STATUSES: Status[] = ["pending", "confirmed", "declined", "completed"];
-const FILTERS = ["all", ...STATUSES] as const;
+const FILTERS = ["all", "pending", "confirmed", "declined", "completed"] as const;
+
+function fmtDeposit(cents: number | null): string {
+  if (cents === null) return "Custom — not set";
+  if (cents === 0) return "Free";
+  return `$${(cents / 100).toFixed(0)}`;
+}
 
 function BookingsAdmin() {
   const qc = useQueryClient();
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]>("all");
+  const [filter, setFilter] = useState<(typeof FILTERS)[number]>("pending");
 
   const { data: bookings = [], isLoading } = useQuery({
     queryKey: ["studio", "bookings"],
@@ -49,7 +57,7 @@ function BookingsAdmin() {
     qc.invalidateQueries({ queryKey: ["studio", "bookings"] });
   }
 
-  async function updateStatus(id: string, status: Status) {
+  async function setStatus(id: string, status: Status) {
     const { error } = await supabase.from("bookings").update({ status }).eq("id", id);
     if (error) { toast.error(error.message); return; }
     toast.success("Updated");
@@ -85,23 +93,74 @@ function BookingsAdmin() {
       ) : visible.length === 0 ? (
         <p className="font-mono text-xs text-muted-foreground">No bookings here.</p>
       ) : (
-        visible.map((b) => <BookingCard key={b.id} booking={b} onStatus={updateStatus} onSaved={invalidate} />)
+        visible.map((b) => <BookingCard key={b.id} booking={b} onSetStatus={setStatus} onSaved={invalidate} />)
       )}
     </div>
   );
 }
 
-function BookingCard({ booking: b, onStatus, onSaved }: { booking: Booking; onStatus: (id: string, s: Status) => void; onSaved: () => void }) {
+function BookingCard({
+  booking: b,
+  onSetStatus,
+  onSaved,
+}: {
+  booking: Booking;
+  onSetStatus: (id: string, s: Status) => void;
+  onSaved: () => void;
+}) {
   const [notes, setNotes] = useState(b.admin_notes ?? "");
-  const [saving, setSaving] = useState(false);
-  const dirty = notes !== (b.admin_notes ?? "");
+  const [savingNotes, setSavingNotes] = useState(false);
+  const [customAmount, setCustomAmount] = useState("");
+  const [savingAmount, setSavingAmount] = useState(false);
+  const [approving, setApproving] = useState(false);
+  const notesDirty = notes !== (b.admin_notes ?? "");
+
+  const needsCustomAmount = b.booking_type === "multiple_days" && b.deposit_amount_cents === null;
 
   async function saveNotes() {
-    setSaving(true);
+    setSavingNotes(true);
     const { error } = await supabase.from("bookings").update({ admin_notes: notes || null }).eq("id", b.id);
-    setSaving(false);
+    setSavingNotes(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Notes saved");
+    onSaved();
+  }
+
+  async function saveCustomAmount() {
+    const dollars = Number(customAmount);
+    if (!customAmount || Number.isNaN(dollars) || dollars <= 0) {
+      toast.error("Enter a valid deposit amount");
+      return;
+    }
+    setSavingAmount(true);
+    const { error } = await supabase
+      .from("bookings")
+      .update({ deposit_amount_cents: Math.round(dollars * 100) })
+      .eq("id", b.id);
+    setSavingAmount(false);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Deposit amount set");
+    onSaved();
+  }
+
+  async function handleApprove() {
+    setApproving(true);
+    const { data: session } = await supabase.auth.getSession();
+    const accessToken = session.session?.access_token;
+    if (!accessToken) {
+      setApproving(false);
+      toast.error("Your session expired — sign out and back in, then try again.");
+      return;
+    }
+    const result = await approveBooking({
+      data: { bookingId: b.id, accessToken, environment: getStripeEnvironment() },
+    });
+    setApproving(false);
+    if ("error" in result) {
+      toast.error(result.error);
+      return;
+    }
+    toast.success(result.paymentLinkUrl ? "Approved — deposit link emailed to the client" : "Approved — client notified, no payment needed");
     onSaved();
   }
 
@@ -116,8 +175,8 @@ function BookingCard({ booking: b, onStatus, onSaved }: { booking: Booking; onSt
           <p className="font-mono text-[10px] text-muted-foreground mt-1">
             Submitted {new Date(b.created_at).toLocaleDateString()}
             {b.preferred_date && ` · prefers ${b.preferred_date}`}
-            {(b.body_location || b.placement) && ` · ${b.body_location || b.placement}`}
-            {(b.session_length || b.size_estimate) && ` · ${b.session_length || b.size_estimate}`}
+            {b.body_location && ` · ${b.body_location}`}
+            {b.size_estimate && ` · ${b.size_estimate}`}
           </p>
         </div>
         <div className="flex flex-col items-end gap-1">
@@ -134,13 +193,14 @@ function BookingCard({ booking: b, onStatus, onSaved }: { booking: Booking; onSt
           >
             {b.status}
           </span>
-          <span
-            className={`font-mono text-[10px] uppercase tracking-widest px-2 py-1 border ${
-              b.deposit_paid ? "border-acid text-acid" : "border-border text-muted-foreground"
-            }`}
-          >
-            {b.deposit_paid ? `✓ Deposit $${((b.deposit_amount_cents ?? 0) / 100).toFixed(0)}` : "No deposit"}
+          <span className="font-mono text-[10px] uppercase tracking-widest px-2 py-1 border border-border text-muted-foreground">
+            {b.booking_type ? BOOKING_TYPE_LABELS[b.booking_type] : "—"} · {fmtDeposit(b.deposit_amount_cents)}
           </span>
+          {b.deposit_paid && (
+            <span className="font-mono text-[10px] uppercase tracking-widest px-2 py-1 border border-acid text-acid">
+              ✓ Deposit paid
+            </span>
+          )}
         </div>
       </div>
 
@@ -156,19 +216,69 @@ function BookingCard({ booking: b, onStatus, onSaved }: { booking: Booking; onSt
         </div>
       )}
 
-      <div className="mt-4 flex gap-2 flex-wrap">
-        {STATUSES.map((s) => (
+      {b.payment_link_url && (
+        <p className="mt-3 font-mono text-[10px] text-muted-foreground break-all">
+          Deposit link:{" "}
+          <a href={b.payment_link_url} target="_blank" rel="noopener noreferrer" className="text-cyan hover:underline">
+            {b.payment_link_url}
+          </a>
+        </p>
+      )}
+
+      {b.status === "pending" && (
+        <div className="mt-4 border-t border-border pt-4 space-y-3">
+          {needsCustomAmount && (
+            <div className="flex items-end gap-2">
+              <label className="block">
+                <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">Set deposit (USD)</span>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value={customAmount}
+                  onChange={(e) => setCustomAmount(e.target.value)}
+                  placeholder="e.g. 350"
+                  className="mt-1 w-32 bg-background border border-border px-3 py-2 text-sm focus:outline-none focus:border-magenta"
+                />
+              </label>
+              <button
+                onClick={saveCustomAmount}
+                disabled={savingAmount}
+                className="font-mono text-[10px] uppercase border border-border px-3 py-2 hover:border-magenta hover:text-magenta disabled:opacity-50"
+              >
+                {savingAmount ? "Saving…" : "Save amount"}
+              </button>
+            </div>
+          )}
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={handleApprove}
+              disabled={approving || needsCustomAmount}
+              className="font-mono text-[10px] uppercase bg-acid text-background px-4 py-2 hover:opacity-80 disabled:opacity-40"
+              title={needsCustomAmount ? "Set a deposit amount first" : undefined}
+            >
+              {approving ? "Approving…" : "Approve & send invoice"}
+            </button>
+            <button
+              onClick={() => onSetStatus(b.id, "declined")}
+              className="font-mono text-[10px] uppercase border border-destructive text-destructive px-4 py-2 hover:bg-destructive hover:text-white"
+            >
+              Decline
+            </button>
+          </div>
+        </div>
+      )}
+
+      {b.status === "confirmed" && (
+        <div className="mt-4 border-t border-border pt-4">
           <button
-            key={s}
-            onClick={() => onStatus(b.id, s)}
-            className={`font-mono text-[10px] uppercase border px-3 py-1 ${
-              b.status === s ? "border-magenta text-magenta" : "border-border hover:border-magenta hover:text-magenta"
-            }`}
+            onClick={() => onSetStatus(b.id, "completed")}
+            className="font-mono text-[10px] uppercase border border-border px-4 py-2 hover:border-cyan hover:text-cyan"
           >
-            {s}
+            Mark completed
           </button>
-        ))}
-      </div>
+        </div>
+      )}
 
       <div className="mt-4">
         <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">Internal notes</span>
@@ -179,13 +289,13 @@ function BookingCard({ booking: b, onStatus, onSaved }: { booking: Booking; onSt
           placeholder="Not shown to the client…"
           className="mt-1 w-full bg-background border border-border px-3 py-2 text-sm focus:outline-none focus:border-magenta"
         />
-        {dirty && (
+        {notesDirty && (
           <button
             onClick={saveNotes}
-            disabled={saving}
+            disabled={savingNotes}
             className="mt-2 font-mono text-[10px] uppercase border border-magenta text-magenta px-3 py-1.5 hover:bg-magenta hover:text-white disabled:opacity-50"
           >
-            {saving ? "Saving…" : "Save notes"}
+            {savingNotes ? "Saving…" : "Save notes"}
           </button>
         )}
       </div>

@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           admin_notes: string | null
           body_location: string | null
+          booking_type: Database["public"]["Enums"]["booking_type"] | null
           client_email: string
           client_name: string
           concept: string
@@ -25,6 +26,7 @@ export type Database = {
           deposit_amount_cents: number | null
           deposit_paid: boolean
           id: string
+          payment_link_url: string | null
           phone: string | null
           placement: string | null
           preferred_date: string | null
@@ -39,6 +41,7 @@ export type Database = {
         Insert: {
           admin_notes?: string | null
           body_location?: string | null
+          booking_type?: Database["public"]["Enums"]["booking_type"] | null
           client_email: string
           client_name: string
           concept: string
@@ -46,6 +49,7 @@ export type Database = {
           deposit_amount_cents?: number | null
           deposit_paid?: boolean
           id?: string
+          payment_link_url?: string | null
           phone?: string | null
           placement?: string | null
           preferred_date?: string | null
@@ -60,6 +64,7 @@ export type Database = {
         Update: {
           admin_notes?: string | null
           body_location?: string | null
+          booking_type?: Database["public"]["Enums"]["booking_type"] | null
           client_email?: string
           client_name?: string
           concept?: string
@@ -67,6 +72,7 @@ export type Database = {
           deposit_amount_cents?: number | null
           deposit_paid?: boolean
           id?: string
+          payment_link_url?: string | null
           phone?: string | null
           placement?: string | null
           preferred_date?: string | null
@@ -431,6 +437,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       booking_status: "pending" | "confirmed" | "declined" | "completed"
+      booking_type: "smaller_tattoo" | "half_day" | "whole_day" | "multiple_days" | "consultation"
       merch_type: "print" | "sticker" | "apparel" | "other"
       order_status: "pending" | "paid" | "fulfilled" | "cancelled"
     }
@@ -562,6 +569,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       booking_status: ["pending", "confirmed", "declined", "completed"],
+      booking_type: ["smaller_tattoo", "half_day", "whole_day", "multiple_days", "consultation"],
       merch_type: ["print", "sticker", "apparel", "other"],
       order_status: ["pending", "paid", "fulfilled", "cancelled"],
     },
