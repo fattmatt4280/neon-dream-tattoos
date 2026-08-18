@@ -37,21 +37,30 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function Home() {
   const { c } = useSiteContent();
   const marquee = c("home.marquee").split(",").map((s) => s.trim()).filter(Boolean);
   const marqueeColors = ["", "text-magenta", "", "text-cyan", "", "text-acid", ""];
 
   const { data: featured = seedPortfolio } = useQuery({
-    queryKey: ["portfolio", "featured"],
+    queryKey: ["portfolio", "home-gallery"],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("portfolio_items")
-        .select("*")
-        .eq("featured", true)
-        .order("sort_order", { ascending: true })
-        .limit(6);
-      return data && data.length ? data : seedPortfolio.filter((p) => p.featured);
+      const { data } = await supabase.from("portfolio_items").select("*");
+      if (!data || data.length === 0) return seedPortfolio.filter((p) => p.featured);
+      // Prefer hand-picked "featured" pieces if any exist, otherwise draw from the whole
+      // gallery — either way, shuffle so a fresh visit surfaces a different trio.
+      const featuredOnly = data.filter((p) => p.featured);
+      const pool = featuredOnly.length >= 3 ? featuredOnly : data;
+      return shuffle(pool).slice(0, 3);
     },
   });
 
