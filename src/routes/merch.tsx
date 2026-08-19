@@ -13,8 +13,8 @@ export const Route = createFileRoute("/merch")({
       { name: "description", content: "Limited prints, holographic stickers, and original artwork from Shyftd Ink." },
       { property: "og:title", content: "Shop — Shyftd Ink" },
       { property: "og:description", content: "Limited prints, holographic stickers, and original artwork." },
-      { property: "og:url", content: "/merch" },
-      { rel: "canonical", href: "/merch" } as never,
+      { property: "og:url", content: "https://shyftdink.com/merch" },
+      { rel: "canonical", href: "https://shyftdink.com/merch" } as never,
     ],
     scripts: [
       {

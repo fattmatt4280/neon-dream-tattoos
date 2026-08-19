@@ -12,8 +12,8 @@ export const Route = createFileRoute("/flash")({
       { name: "description", content: "Available tattoo flash designs ready to be claimed. Custom neon, pop culture, and graffiti pieces." },
       { property: "og:title", content: "Available Flash — Shyftd Ink" },
       { property: "og:description", content: "Available tattoo flash designs ready to be claimed." },
-      { property: "og:url", content: "/flash" },
-      { rel: "canonical", href: "/flash" } as never,
+      { property: "og:url", content: "https://shyftdink.com/flash" },
+      { rel: "canonical", href: "https://shyftdink.com/flash" } as never,
     ],
     scripts: [
       {

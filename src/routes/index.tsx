@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "Custom neon color realism and pop culture surrealism tattoos. Portfolio, available flash designs, prints and stickers. Book a session at shyftdink.com." },
       { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/xdt6RJFpepbOdBZsEqbz8T7iJbH3/social-images/social-1785343171534-IMG_7847.webp" },
       { property: "og:url", content: "https://shyftdink.com/" },
-      { rel: "canonical", href: "/" } as never,
+      { rel: "canonical", href: "https://shyftdink.com/" } as never,
     ],
     scripts: [
       {

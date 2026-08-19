@@ -17,8 +17,8 @@ export const Route = createFileRoute("/portfolio")({
       { name: "description", content: "Browse the full portfolio of neon color realism and graffiti surrealism tattoos by Shyftd Ink." },
       { property: "og:title", content: "Portfolio — Shyftd Ink" },
       { property: "og:description", content: "Browse the full portfolio of neon color realism and graffiti surrealism tattoos." },
-      { property: "og:url", content: "/portfolio" },
-      { rel: "canonical", href: "/portfolio" } as never,
+      { property: "og:url", content: "https://shyftdink.com/portfolio" },
+      { rel: "canonical", href: "https://shyftdink.com/portfolio" } as never,
     ],
     scripts: [
       {

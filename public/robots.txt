@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin
+Disallow: /studio
 Disallow: /login
+
+Sitemap: https://shyftdink.com/sitemap.xml

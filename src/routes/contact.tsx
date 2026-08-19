@@ -10,8 +10,8 @@ export const Route = createFileRoute("/contact")({
       { name: "description", content: "Get in touch with Shyftd Ink for bookings, collaborations, or merch inquiries." },
       { property: "og:title", content: "Contact — Shyftd Ink" },
       { property: "og:description", content: "Get in touch with Shyftd Ink." },
-      { property: "og:url", content: "/contact" },
-      { rel: "canonical", href: "/contact" } as never,
+      { property: "og:url", content: "https://shyftdink.com/contact" },
+      { rel: "canonical", href: "https://shyftdink.com/contact" } as never,
     ],
     scripts: [
       {
@@ -34,9 +34,8 @@ export const Route = createFileRoute("/contact")({
             },
           ],
           sameAs: [
-            "https://instagram.com",
-            "https://tiktok.com",
-            "https://twitter.com",
+            "https://instagram.com/shyftd.ink",
+            "https://www.tiktok.com/@shyftd.ink",
           ],
         }),
       },

@@ -18,6 +18,8 @@ export const Route = createFileRoute("/book")({
       { name: "description", content: "Request your tattoo session. I review every booking personally before sending a deposit link." },
       { property: "og:title", content: "Book a Session — Shyftd Ink" },
       { property: "og:description", content: "Request your tattoo session. I review every booking personally before sending a deposit link." },
+      { property: "og:url", content: "https://shyftdink.com/book" },
+      { rel: "canonical", href: "https://shyftdink.com/book" } as never,
     ],
   }),
   component: BookPage,
